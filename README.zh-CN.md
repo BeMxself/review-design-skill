@@ -46,21 +46,14 @@ Codex 会从以下路径扫描 skills：
 - 仓库路径链：`./.agents/skills/`（从当前目录向上到仓库根目录）
 - 用户目录：`~/.agents/skills/`
 
-安装到用户目录：
+本项目建议只用用户目录安装（不需要在本仓库创建 `.agents/skills`）：
 
 ```bash
 mkdir -p ~/.agents/skills
 rsync -a skills/ ~/.agents/skills/
 ```
 
-或只安装到当前仓库：
-
-```bash
-mkdir -p .agents/skills
-rsync -a skills/ .agents/skills/
-```
-
-后续更新时，在同一路径重复执行对应的 `rsync` 命令即可。
+后续更新时，重复执行同样的 `rsync` 命令即可。
 
 ### Kiro CLI
 

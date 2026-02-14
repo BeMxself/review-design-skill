@@ -46,21 +46,14 @@ Codex scans skill folders from:
 - repository path chain: `./.agents/skills/` up to repo root
 - user path: `~/.agents/skills/`
 
-Install to user-level skills:
+For this project, use user-level install only (no need to create `.agents/skills` in this repo):
 
 ```bash
 mkdir -p ~/.agents/skills
 rsync -a skills/ ~/.agents/skills/
 ```
 
-Or install to this repo only:
-
-```bash
-mkdir -p .agents/skills
-rsync -a skills/ .agents/skills/
-```
-
-To update later, re-run the same `rsync` command in the same target path.
+To update later, re-run the same `rsync` command.
 
 ### Kiro CLI
 
