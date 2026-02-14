@@ -46,7 +46,17 @@ Codex 会从以下路径扫描 skills：
 - 仓库路径链：`./.agents/skills/`（从当前目录向上到仓库根目录）
 - 用户目录：`~/.agents/skills/`
 
-本项目建议只用用户目录安装（不需要在本仓库创建 `.agents/skills`）：
+推荐方式（使用内置 `$skill-installer`）：
+
+```text
+$skill-installer
+```
+
+然后让它从 GitHub 仓库安装：
+- repo: `BeMxself/review-design-skill`
+- path: `skills/review-design`
+
+可选方式（手动安装）：
 
 ```bash
 mkdir -p ~/.agents/skills

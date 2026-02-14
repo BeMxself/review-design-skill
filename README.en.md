@@ -46,7 +46,17 @@ Codex scans skill folders from:
 - repository path chain: `./.agents/skills/` up to repo root
 - user path: `~/.agents/skills/`
 
-For this project, use user-level install only (no need to create `.agents/skills` in this repo):
+Recommended (use built-in `$skill-installer`):
+
+```text
+$skill-installer
+```
+
+Then ask it to install from GitHub:
+- repo: `BeMxself/review-design-skill`
+- path: `skills/review-design`
+
+Alternative (manual install):
 
 ```bash
 mkdir -p ~/.agents/skills
