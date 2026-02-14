@@ -1,17 +1,17 @@
 # review-design-skill
 
-[English](README.md) | [中文](README.zh-CN.md)
+[English](README.en.md) | [中文](README.md)
 
-A reusable design-document review skill for iterative human+AI collaboration.
+一个可复用的设计文档审查 Skill，支持人类与 AI 的多轮协作审查。
 
-## What this plugin provides
+## 插件内容
 
-- A reusable skill: `review-design`
-- Dynamic review planning (not rigid round order)
-- Anti-overfitting guardrails (avoid domain lock-in)
-- Human-gated closure protocol
+- 可复用 Skill：`review-design`
+- 动态审查计划（不是固定轮次顺序）
+- 反过拟合防护（避免被单一领域经验绑死）
+- 人类主导收口机制
 
-## Repository layout
+## 目录结构
 
 ```text
 skills/
@@ -22,77 +22,77 @@ skills/
       external-auth-review-dimension-map.md
 ```
 
-## Install
+## 安装
 
-### Claude Code (Plugin)
+### Claude Code（插件）
 
-Install in Claude Code by adding this GitHub repo as a plugin marketplace:
+在 Claude Code 中把本 GitHub 仓库添加为插件市场（Marketplace）：
 
 ```text
 /plugin marketplace add BeMxself/review-design-skill
 ```
 
-Then install the plugin:
+然后安装插件：
 
 ```text
 /plugin install review-design@BeMxself-review-design-skill
 ```
 
-After installation, `/review-design` is available.
+安装后即可使用 `/review-design`。
 
-### Codex CLI (Skills)
+### Codex CLI（Skills）
 
-Codex scans skill folders from:
-- repository path chain: `./.agents/skills/` up to repo root
-- user path: `~/.agents/skills/`
+Codex 会从以下路径扫描 skills：
+- 仓库路径链：`./.agents/skills/`（从当前目录向上到仓库根目录）
+- 用户目录：`~/.agents/skills/`
 
-For this project, use user-level install only (no need to create `.agents/skills` in this repo):
+本项目建议只用用户目录安装（不需要在本仓库创建 `.agents/skills`）：
 
 ```bash
 mkdir -p ~/.agents/skills
 rsync -a skills/ ~/.agents/skills/
 ```
 
-To update later, re-run the same `rsync` command.
+后续更新时，重复执行同样的 `rsync` 命令即可。
 
 ### Kiro CLI
 
-1) Install skills into the current workspace:
+1）将 skills 安装到当前 workspace：
 ```bash
 mkdir -p .kiro/skills
 rsync -a skills/ .kiro/skills/
 ```
 
-2) Create an agent (this opens an editor):
+2）创建一个 agent（该命令会打开编辑器）：
 ```bash
 mkdir -p .kiro/agents
 kiro-cli agent create --name "Review Design Agent" --directory .kiro/agents
 ```
 
-3) In `.kiro/agents/review_design_agent.json`, add:
+3）在 `.kiro/agents/review_design_agent.json` 中加入：
 ```json
 { "resources": ["skill://.kiro/skills/**/SKILL.md"] }
 ```
 
-4) Start chat with that agent:
+4）使用该 agent 启动对话：
 ```bash
 kiro-cli chat --agent "Review Design Agent"
 ```
 
-## Use
+## 使用方式
 
-Use `review-design` when reviewing design documents.
+在审查设计文档时使用 `review-design`。
 
-Platform invocation syntax is different, but the skill content should stay platform-agnostic:
-- Claude Code: `/review-design`
-- Codex: run `/skills`, then type `$review-design`
+不同平台调用语法不同，但 Skill 内容不应绑定平台：
+- Claude Code：`/review-design`
+- Codex：先运行 `/skills`，再输入 `$review-design`
 
-Typical flow:
-1. Round 0: classify document archetype + build initial review plan
-2. Round N: iterative findings + decision log + plan rebalance
-3. Close only after explicit human decision
+典型流程：
+1. Round 0：先做文档原型分类并产出初始审查计划
+2. Round N：逐轮输出问题、记录人类决策、动态重排优先级
+3. 结束：必须由人类明确确认收口
 
-## Notes
+## 说明
 
-- The reference map is anonymized and does not expose source project details.
-- This plugin is intended to be adapted for different design domains.
+- 参考映射文档已匿名化，不暴露来源项目细节。
+- 该插件可迁移到不同类型的设计文档审查场景。
