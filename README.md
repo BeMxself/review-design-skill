@@ -40,14 +40,27 @@ Then install the plugin:
 
 After installation, `/review-design` is available.
 
-### Codex
+### Codex CLI (Skills)
+
+Codex scans skill folders from:
+- repository path chain: `./.agents/skills/` up to repo root
+- user path: `~/.agents/skills/`
+
+Install to user-level skills:
 
 ```bash
-mkdir -p ~/.codex/skills
-rsync -a skills/ ~/.codex/skills/
+mkdir -p ~/.agents/skills
+rsync -a skills/ ~/.agents/skills/
 ```
 
-To update later, re-run the same `rsync` command.
+Or install to this repo only:
+
+```bash
+mkdir -p .agents/skills
+rsync -a skills/ .agents/skills/
+```
+
+To update later, re-run the same `rsync` command in the same target path.
 
 ### Kiro CLI
 
@@ -79,7 +92,7 @@ Use `review-design` when reviewing design documents.
 
 Platform invocation syntax is different, but the skill content should stay platform-agnostic:
 - Claude Code: `/review-design`
-- Codex: `$review-design`
+- Codex: run `/skills`, then type `$review-design`
 
 Typical flow:
 1. Round 0: classify document archetype + build initial review plan

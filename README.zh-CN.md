@@ -40,14 +40,27 @@ skills/
 
 安装后即可使用 `/review-design`。
 
-### Codex
+### Codex CLI（Skills）
+
+Codex 会从以下路径扫描 skills：
+- 仓库路径链：`./.agents/skills/`（从当前目录向上到仓库根目录）
+- 用户目录：`~/.agents/skills/`
+
+安装到用户目录：
 
 ```bash
-mkdir -p ~/.codex/skills
-rsync -a skills/ ~/.codex/skills/
+mkdir -p ~/.agents/skills
+rsync -a skills/ ~/.agents/skills/
 ```
 
-后续更新时，重复执行同样的 `rsync` 命令即可。
+或只安装到当前仓库：
+
+```bash
+mkdir -p .agents/skills
+rsync -a skills/ .agents/skills/
+```
+
+后续更新时，在同一路径重复执行对应的 `rsync` 命令即可。
 
 ### Kiro CLI
 
@@ -79,7 +92,7 @@ kiro-cli chat --agent "Review Design Agent"
 
 不同平台调用语法不同，但 Skill 内容不应绑定平台：
 - Claude Code：`/review-design`
-- Codex：`$review-design`
+- Codex：先运行 `/skills`，再输入 `$review-design`
 
 典型流程：
 1. Round 0：先做文档原型分类并产出初始审查计划

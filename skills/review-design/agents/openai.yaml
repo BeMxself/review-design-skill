@@ -1,3 +1,4 @@
-display_name: Review Design
-short_description: Iterative human+AI workflow for multi-round design document review.
-default_prompt: Run a Round 0 review plan first, extract review dimensions, score priorities dynamically, and guide human-gated closure.
+interface:
+  display_name: Review Design
+  short_description: Iterative human+AI workflow for multi-round design document review.
+  default_prompt: Run a Round 0 review plan first, extract review dimensions, score priorities dynamically, and guide human-gated closure.
