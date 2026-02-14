@@ -1,6 +1,8 @@
 # review-design-skill
 
-一个用于 Claude Code 的设计文档审查 Skill 插件，支持人类与 AI 的多轮协作审查。
+[English](README.md)
+
+一个可复用的设计文档审查 Skill，支持人类与 AI 的多轮协作审查。
 
 ## 插件内容
 
@@ -22,20 +24,31 @@ skills/
 
 ## 安装
 
-### 方式 1：直接拷贝 skill 目录
+### Claude Code（使用 `/plugin`）
 
-将 `skills/design-review-workflow` 拷贝到本机 Claude Code skills 目录。
+使用 Claude Code 的 `/plugin` 命令安装本仓库，然后启用 `design-review-workflow`。
 
-### 方式 2：本地开发使用软链接
+### Codex
 
 ```bash
-mkdir -p ~/.claude/skills
-ln -s /绝对路径/review-design-skill/skills/design-review-workflow ~/.claude/skills/design-review-workflow
+mkdir -p "${CODEX_HOME:-$HOME/.codex}/skills"
+ln -s /绝对路径/review-design-skill/skills/design-review-workflow "${CODEX_HOME:-$HOME/.codex}/skills/design-review-workflow"
+```
+
+### kiro-cli
+
+```bash
+mkdir -p ~/.kiro/skills
+ln -s /绝对路径/review-design-skill/skills/design-review-workflow ~/.kiro/skills/design-review-workflow
 ```
 
 ## 使用方式
 
-在审查设计文档时，要求 Claude Code 使用 `design-review-workflow`。
+在审查设计文档时使用 `design-review-workflow`。
+
+不同平台调用语法不同，但 Skill 内容不应绑定平台：
+- Claude Code：`/design-review-workflow`
+- Codex：`$design-review-workflow`
 
 典型流程：
 1. Round 0：先做文档原型分类并产出初始审查计划

@@ -15,6 +15,12 @@ Turn scattered review notes into a reusable, iterative review workflow:
 4. Run human+AI multi-round review with dynamic reprioritization.
 5. Let the human explicitly decide when to close (never close only because round count is reached).
 
+## Platform Neutrality
+
+- Keep this workflow platform-agnostic.
+- Do not require platform-specific invocation syntax in the workflow body (for example, `/skill-name` or `$skill-name`).
+- If invocation guidance is needed, place it in platform docs (README), not in the skill logic.
+
 ---
 
 ## Dimension Extraction Baseline (from a multi-round case review evolution)

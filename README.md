@@ -1,6 +1,8 @@
 # review-design-skill
 
-A Claude Code skill plugin for iterative design-document review with human+AI collaboration.
+[中文](README.zh-CN.md)
+
+A reusable design-document review skill for iterative human+AI collaboration.
 
 ## What this plugin provides
 
@@ -22,20 +24,31 @@ skills/
 
 ## Install
 
-### Option 1: copy skill folder
+### Claude Code (use `/plugin`)
 
-Copy `skills/design-review-workflow` into your Claude Code skills directory.
+Install this repository via Claude Code's `/plugin` command, then enable `design-review-workflow`.
 
-### Option 2: symlink for local development
+### Codex
 
 ```bash
-mkdir -p ~/.claude/skills
-ln -s /absolute/path/to/review-design-skill/skills/design-review-workflow ~/.claude/skills/design-review-workflow
+mkdir -p "${CODEX_HOME:-$HOME/.codex}/skills"
+ln -s /absolute/path/to/review-design-skill/skills/design-review-workflow "${CODEX_HOME:-$HOME/.codex}/skills/design-review-workflow"
+```
+
+### kiro-cli
+
+```bash
+mkdir -p ~/.kiro/skills
+ln -s /absolute/path/to/review-design-skill/skills/design-review-workflow ~/.kiro/skills/design-review-workflow
 ```
 
 ## Use
 
-Ask Claude Code to use `design-review-workflow` when reviewing design documents.
+Use `design-review-workflow` when reviewing design documents.
+
+Platform invocation syntax is different, but the skill content should stay platform-agnostic:
+- Claude Code: `/design-review-workflow`
+- Codex: `$design-review-workflow`
 
 Typical flow:
 1. Round 0: classify document archetype + build initial review plan
