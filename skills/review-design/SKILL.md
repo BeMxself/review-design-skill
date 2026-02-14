@@ -1,9 +1,9 @@
 ---
-name: design-review-workflow
+name: review-design
 description: Use when running or facilitating iterative design-document reviews with human+AI collaboration, especially when you need to extract review dimensions from prior review records, build a layered review plan, and adapt scope across rounds until the human decides to close.
 ---
 
-# Design Review Workflow
+# Review Design Workflow
 
 ## Overview
 

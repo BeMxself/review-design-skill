@@ -1,12 +1,12 @@
 # review-design-skill
 
-[中文](README.zh-CN.md)
+[English](README.md) | [中文](README.zh-CN.md)
 
 A reusable design-document review skill for iterative human+AI collaboration.
 
 ## What this plugin provides
 
-- A reusable skill: `design-review-workflow`
+- A reusable skill: `review-design`
 - Dynamic review planning (not rigid round order)
 - Anti-overfitting guardrails (avoid domain lock-in)
 - Human-gated closure protocol
@@ -15,7 +15,7 @@ A reusable design-document review skill for iterative human+AI collaboration.
 
 ```text
 skills/
-  design-review-workflow/
+  review-design/
     SKILL.md
     agents/openai.yaml
     references/
@@ -24,31 +24,62 @@ skills/
 
 ## Install
 
-### Claude Code (use `/plugin`)
+### Claude Code (Plugin)
 
-Install this repository via Claude Code's `/plugin` command, then enable `design-review-workflow`.
+Install in Claude Code by adding this GitHub repo as a plugin marketplace:
+
+```text
+/plugin marketplace add BeMxself/review-design-skill
+```
+
+Then install the plugin:
+
+```text
+/plugin install review-design@BeMxself-review-design-skill
+```
+
+After installation, `/review-design` is available.
 
 ### Codex
 
 ```bash
-mkdir -p "${CODEX_HOME:-$HOME/.codex}/skills"
-ln -s /absolute/path/to/review-design-skill/skills/design-review-workflow "${CODEX_HOME:-$HOME/.codex}/skills/design-review-workflow"
+mkdir -p ~/.codex/skills
+rsync -a skills/ ~/.codex/skills/
 ```
 
-### kiro-cli
+To update later, re-run the same `rsync` command.
 
+### Kiro CLI
+
+1) Install skills into the current workspace:
 ```bash
-mkdir -p ~/.kiro/skills
-ln -s /absolute/path/to/review-design-skill/skills/design-review-workflow ~/.kiro/skills/design-review-workflow
+mkdir -p .kiro/skills
+rsync -a skills/ .kiro/skills/
+```
+
+2) Create an agent (this opens an editor):
+```bash
+mkdir -p .kiro/agents
+kiro-cli agent create --name "Review Design Agent" --directory .kiro/agents
+```
+
+3) In `.kiro/agents/review_design_agent.json`, add:
+```json
+{ "resources": ["skill://.kiro/skills/**/SKILL.md"] }
+```
+
+4) Start chat with that agent:
+```bash
+kiro-cli chat --agent "Review Design Agent"
 ```
 
 ## Use
 
-Use `design-review-workflow` when reviewing design documents.
+Use `review-design` when reviewing design documents.
 
 Platform invocation syntax is different, but the skill content should stay platform-agnostic:
-- Claude Code: `/design-review-workflow`
-- Codex: `$design-review-workflow`
+- Claude Code: `/review-design`
+- Codex: `$review-design`
 
 Typical flow:
 1. Round 0: classify document archetype + build initial review plan

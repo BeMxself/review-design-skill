@@ -1,12 +1,12 @@
 # review-design-skill
 
-[English](README.md)
+[English](README.md) | [中文](README.zh-CN.md)
 
 一个可复用的设计文档审查 Skill，支持人类与 AI 的多轮协作审查。
 
 ## 插件内容
 
-- 可复用 Skill：`design-review-workflow`
+- 可复用 Skill：`review-design`
 - 动态审查计划（不是固定轮次顺序）
 - 反过拟合防护（避免被单一领域经验绑死）
 - 人类主导收口机制
@@ -15,7 +15,7 @@
 
 ```text
 skills/
-  design-review-workflow/
+  review-design/
     SKILL.md
     agents/openai.yaml
     references/
@@ -24,31 +24,62 @@ skills/
 
 ## 安装
 
-### Claude Code（使用 `/plugin`）
+### Claude Code（插件）
 
-使用 Claude Code 的 `/plugin` 命令安装本仓库，然后启用 `design-review-workflow`。
+在 Claude Code 中把本 GitHub 仓库添加为插件市场（Marketplace）：
+
+```text
+/plugin marketplace add BeMxself/review-design-skill
+```
+
+然后安装插件：
+
+```text
+/plugin install review-design@BeMxself-review-design-skill
+```
+
+安装后即可使用 `/review-design`。
 
 ### Codex
 
 ```bash
-mkdir -p "${CODEX_HOME:-$HOME/.codex}/skills"
-ln -s /绝对路径/review-design-skill/skills/design-review-workflow "${CODEX_HOME:-$HOME/.codex}/skills/design-review-workflow"
+mkdir -p ~/.codex/skills
+rsync -a skills/ ~/.codex/skills/
 ```
 
-### kiro-cli
+后续更新时，重复执行同样的 `rsync` 命令即可。
 
+### Kiro CLI
+
+1）将 skills 安装到当前 workspace：
 ```bash
-mkdir -p ~/.kiro/skills
-ln -s /绝对路径/review-design-skill/skills/design-review-workflow ~/.kiro/skills/design-review-workflow
+mkdir -p .kiro/skills
+rsync -a skills/ .kiro/skills/
+```
+
+2）创建一个 agent（该命令会打开编辑器）：
+```bash
+mkdir -p .kiro/agents
+kiro-cli agent create --name "Review Design Agent" --directory .kiro/agents
+```
+
+3）在 `.kiro/agents/review_design_agent.json` 中加入：
+```json
+{ "resources": ["skill://.kiro/skills/**/SKILL.md"] }
+```
+
+4）使用该 agent 启动对话：
+```bash
+kiro-cli chat --agent "Review Design Agent"
 ```
 
 ## 使用方式
 
-在审查设计文档时使用 `design-review-workflow`。
+在审查设计文档时使用 `review-design`。
 
 不同平台调用语法不同，但 Skill 内容不应绑定平台：
-- Claude Code：`/design-review-workflow`
-- Codex：`$design-review-workflow`
+- Claude Code：`/review-design`
+- Codex：`$review-design`
 
 典型流程：
 1. Round 0：先做文档原型分类并产出初始审查计划

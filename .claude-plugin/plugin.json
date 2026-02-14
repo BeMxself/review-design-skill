@@ -1,0 +1,16 @@
+{
+  "name": "review-design",
+  "description": "Iterative design-document review workflow with dynamic prioritization and human-gated closure.",
+  "version": "1.0.0",
+  "author": {
+    "name": "songmingxu"
+  },
+  "license": "MIT",
+  "keywords": [
+    "design-review",
+    "workflow",
+    "architecture",
+    "security",
+    "documentation"
+  ]
+}
