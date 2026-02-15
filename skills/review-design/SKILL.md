@@ -1,246 +1,227 @@
 ---
 name: review-design
-description: Use when running or facilitating iterative design-document reviews with human+AI collaboration, especially when you need to extract review dimensions from prior review records, build a layered review plan, and adapt scope across rounds until the human decides to close.
+description: Use when running multi-round human+AI design-document reviews that require issue tracking, versioned revisions, and explicit human-gated closure.
 ---
 
 # Review Design Workflow
 
-## Overview
+## Core Contract
 
-Turn scattered review notes into a reusable, iterative review workflow:
+This skill is for iterative review of evolving design docs, not one-shot critique.
 
-1. Analyze the design doc nature first.
-2. Extract review dimensions from history (or current draft).
-3. Build a layered and ordered review plan.
-4. Run human+AI multi-round review with dynamic reprioritization.
-5. Let the human explicitly decide when to close (never close only because round count is reached).
+Mandatory loop:
+1. Review current design version `Dn`.
+2. Save round report `Rn` (findings + status snapshot).
+3. Human+AI disposition each issue.
+4. Revise design to `Dn+1` with issue-to-change log.
+5. Human chooses next step: `继续审查 / 有条件收口 / 结束审查`.
 
-## Platform Neutrality
+Hard rules:
+- One round per response.
+- Never auto-advance without explicit human decision.
+- Never run Round `N+1` on unchanged design.
+- Every issue must have a handling record.
 
-- Keep this workflow platform-agnostic.
-- Do not require platform-specific invocation syntax in the workflow body (for example, `/skill-name` or `$skill-name`).
-- If invocation guidance is needed, place it in platform docs (README), not in the skill logic.
+## Round 0 (Setup)
 
----
+Classify context:
+- Stage: brainstorming / solution / implementation / migration / operations.
+- Risk profile: security-critical / data-critical / integration-heavy / low-risk.
+- Change surface: new module / refactor / incremental enhancement.
+- Validation source: existing code/contracts vs greenfield.
 
-## Dimension Extraction Baseline (from a multi-round case review evolution)
+Define review state:
+- Design baseline: `D0`.
+- Report baseline: `R0`.
+- Stable issue IDs (for example `R1-1`, `R1-2`).
+- Issue status: `open / resolved / deferred / accepted-risk`.
 
-Use this as a default dimension pool, then tailor by document type.
+Pick dimensions and priority tier (`P0/P1/P2`):
+1. Architecture correctness
+2. Security and abuse resistance
+3. Domain/data/process completeness
+4. Consistency and contradiction
+5. Implementation alignment
+6. Operability/NFR
+7. Structure/readability
 
-1. **Architecture correctness**
-  - Abstraction boundaries, flow ownership, responsibility split, protocol modeling.
-2. **Security and abuse resistance**
-  - Threats, token lifecycle, replay/open-redirect/injection/substitution risks, secret handling.
-3. **Domain/data/process completeness**
-  - Data model fields/constraints, full lifecycle flows, edge paths, error semantics.
-4. **Consistency and contradiction**
-  - Internal contradictions, naming drift, cross-section mismatch, invalid or self-negating design.
-5. **Implementation alignment**
-  - Claims vs existing code contracts, interface signatures, lifecycle assumptions, migration feasibility.
-6. **Operability / NFR**
-  - Deployment constraints, cache topology, timeout/health/logging/i18n/observability requirements.
-7. **Document structure and readability**
-  - Section ownership, duplication, navigation, scanability, decision placement.
+For refactor/redesign touching existing capabilities, declare intent:
+- `replace`
+- `coexist`
+- `bypass`
+- `experiment`
 
-If the target document is not security/integration heavy, do not force this exact priority; re-rank after archetype classification (see "Anti-Overfitting Guardrails").
+Prepare duplication checkpoint:
+- Existing capability inventory (interface/class/module + responsibility).
+- Overlap map (duplicate / extend / replace).
+- Justification evidence (why existing implementation is insufficient).
+- Coexistence and sunset plan (owner, trigger, timeline, rollback).
 
-Baseline order (high -> low): **1/2 -> 3/4 -> 5 -> 6 -> 7**
-
-Rationale from the reviewed case:
-- Early rounds found high-impact architecture/security flaws.
-- Mid rounds focused on consistency/completeness.
-- Later rounds focused on code alignment and precision.
-- Structure/readability optimization was most effective after core semantics stabilized.
-
-Do not treat this baseline as fixed phase gates.
-In the observed review evolution, high-risk items reappeared in later rounds (for example, implementation-alignment and security precision issues after structure cleanup), so strict one-way progression is unsafe.
-
----
-
-## Adaptive Ordering Engine (replace rigid round sequencing)
-
-For each dimension, score 0-3 on:
-
-- **Impact**: security/business correctness blast radius if wrong.
-- **Rework cost**: redesign cost if discovered late.
-- **Uncertainty**: how speculative or under-defined current design is.
-- **Evidence gap**: mismatch risk versus requirements/code/contracts.
-
-Priority score:
-
-`score = 4*Impact + 3*ReworkCost + 2*Uncertainty + 1*EvidenceGap`
-
-Round planning rule:
-- Pick top 2 dimensions by score as primary focus.
-- Pick 1 sentinel dimension for drift detection:
-  - always include **Security** sentinel for auth/payment/data-sensitive designs.
-  - include **Implementation alignment** sentinel whenever code or existing contracts exist.
-
-This keeps flexibility while preventing late surprise regressions.
-
----
+Ask the human to confirm or adjust this plan before Round 1.
 
 ## Anti-Overfitting Guardrails
 
-Before Round 1, run this check:
+- Classify document archetype first; do not copy old-project priorities blindly.
+- Keep only dimensions relevant to current doc type.
+- If findings use legacy vocabulary without evidence, re-check for overfitting.
+- Ask the human whether priority profile looks domain-biased before continuing.
 
-1. **Archetype first, not history first**
-  - Classify document archetype: integration/security, domain-model, API contract, migration, operations, frontend UX, governance/policy.
-2. **Dimension remap**
-  - Keep only relevant dimensions; do not keep dimensions just because they appeared in prior projects.
-3. **Sentinel remap**
-  - Sentinel is not always security:
-    - policy/governance docs -> compliance/consistency sentinel
-    - ops docs -> reliability/operability sentinel
-    - pure UX docs -> flow/usability sentinel
-4. **Vocabulary drift check**
-  - If findings repeatedly reuse old-project terminology without direct evidence in current doc, mark as potential overfit and re-review that item.
-5. **Human calibration**
-  - Ask the human whether the current priority profile feels domain-biased; adjust before continuing.
+## Prioritization Engine
 
----
+Score each dimension (0-3):
+- `Impact`
+- `ReworkCost`
+- `Uncertainty`
+- `EvidenceGap`
 
-## Round 0: Document Typing and Initial Plan
+Priority formula:
+`score = 4*Impact + 3*ReworkCost + 2*Uncertainty + 1*EvidenceGap`
 
-Before reviewing details, classify the document:
+Round focus rule:
+- Pick top 2 dimensions by score.
+- Add 1 sentinel:
+  - Security sentinel for auth/payment/sensitive-data designs.
+  - Implementation-alignment sentinel when existing code/contracts exist.
 
-- Stage: brainstorming / solution design / implementation design / migration plan / operations plan.
-- Risk profile: security-critical, data-critical, external integration heavy, low risk.
-- Change surface: new module / refactor / incremental enhancement.
-- Validation source availability: code exists vs pure greenfield.
+## Round N Protocol
 
-Then produce an initial review plan with:
+### Phase A: Review `Dn`
 
-- Chosen dimensions (subset from baseline).
-- Priority tier per dimension (`P0`, `P1`, `P2`).
-- Round objective sequence (draft, not fixed).
-- Exit signals (what would make this review “ready to close”).
+- Review 1-3 focus dimensions.
+- Emit issue cards with:
+  - `ID`, `dimension`, `severity`, `evidence`, `impact`, `options`, `recommendation`
+- For duplication-related issues also include:
+  - `intent`, `replacement_scope`, `coexistence_window`, `sunset_plan`
 
-Also include dynamic ordering inputs:
-- Dimension scores (`Impact/Rework/Uncertainty/EvidenceGap`).
-- Selected sentinel dimension(s).
-- Rebalance triggers (what conditions force priority reshuffle).
+### Phase B: Persist `Rn` (Mandatory)
 
-Important: explicitly ask the human to adjust this plan before Round 1.
+Save a round report before moving to dispositions. Report must include:
+- Input design version (`Dn`)
+- Findings and severity
+- Issue status snapshot
+- Carry-over high-risk items
 
----
+### Phase C: Issue-by-Issue Human+AI Disposition (Mandatory)
 
-## Iterative Review Loop (Round N)
+For each issue, record:
+- Decision: `accept / reject / defer / partial`
+- Rationale
+- Handling action (what to change, or explicit no-change reason)
 
-For each round:
+No issue should be left without explicit handling notes.
 
-1. **Set focus**
-  - Select 1-3 dimensions as this round focus.
-  - Keep at least one unresolved high-risk dimension in scope.
+### Phase D: Revision (Mandatory Before Next Round)
 
-2. **Review and emit findings**
-  - Use issue cards with: `ID`, `dimension`, `severity`, `evidence`, `impact`, `suggested options`.
-  - Separate facts from suggestions.
+- Apply agreed actions to produce revised design `Dn+1`.
+- Produce change log: `Issue ID -> design section delta`.
+- If `Dn+1` is not ready, stay in disposition/revision mode.
+- Do not start Round `N+1` until revised design exists.
 
-3. **Human decision checkpoint**
-  - For each issue: `accept / reject / defer / partial`.
-  - Record rationale (one sentence is enough).
+### Phase E: Round Summary + Human Gate (Mandatory)
 
-4. **Plan update**
-  - Re-score open issues and reprioritize dimensions.
-  - Add/remove/merge next-round focus items.
+Summarize:
+- New issues
+- Resolved issues
+- Residual high-risk items
+- Plan delta
 
-5. **Round summary**
-  - New issues, resolved issues, residual high-risk items, plan delta.
+Then ask explicit decision:
+- `继续审查`
+- `有条件收口`
+- `结束审查`
 
-Do not force linear progression if new blocker appears; jump back to higher-priority dimensions when needed.
+Do not continue to the next round in the same response.
 
-Rebalance triggers (recommended):
-- Any newly discovered `S0/S1` outside current focus -> immediate next-round top priority.
-- If contradiction-type findings dominate (>30%), schedule a consistency-focused round.
-- If evidence disputes dominate (design claims vs code/contract mismatch), pull implementation-alignment forward.
+## Intent-Aware Duplication Rules
 
----
+Duplication is not automatically a defect.
 
-## Severity and Priority Rules
+Intentional duplication (acceptable with controls):
+- Intent declared (`replace/coexist/bypass/experiment`)
+- Evidence that existing capability is insufficient
+- Bounded coexistence window
+- Clear sunset and rollback plan
 
-Use stable severity labels:
+Accidental duplication (issue):
+- No intent declaration
+- Re-implements existing responsibilities without evidence
+- Creates parallel ownership or conflicting semantics
+
+Severity guidance:
+- `S1`: core-flow correctness/security/ownership ambiguity
+- `S2`: localized complexity/maintainability burden
+
+Decision logging labels:
+- `accept duplication`
+- `defer pending evidence`
+- `reject as accidental duplication`
+
+## Rebalance Triggers
+
+Reprioritize immediately when:
+- A new `S0/S1` appears outside current focus.
+- Contradiction findings exceed about 30%.
+- Evidence disputes (design vs code/contract) dominate.
+- Duplication intent is unclear or sunset path is missing.
+
+## Severity and Closure Rules
+
+Severity:
 - `S0`: release/safety/business/regulatory blocker
 - `S1`: major correctness/completeness risk
 - `S2`: important precision/consistency gap
 - `S3`: readability/maintainability optimization
 
-Prioritization rules:
-- Any open `S0` keeps review in “continue” mode by default.
+Closure defaults:
+- Any open `S0` => continue by default.
 - `S1` can close only with explicit human risk acceptance.
-- `S2/S3` can be batched or deferred with tracked TODO.
-- If a low-layer round finds an `S0/S1`, immediately lift that dimension to next round top priority.
-
-Anti-pattern to avoid:
-- “Round count done, so close review.”
-- “Already entered readability phase, so do not revisit architecture/security.”
-
----
-
-## Human-AI Collaboration Contract
-
-AI responsibilities:
-- Propose structure, surface risks, maintain issue ledger, suggest concrete options.
-- Keep plan mutable and transparent each round.
-
-Human responsibilities:
-- Decide acceptance and trade-offs.
-- Approve priority changes when needed.
-- Decide whether to continue or close review.
-
-AI must not auto-declare review complete without explicit human closure decision.
-
----
+- `S2/S3` can be deferred with tracked TODOs.
 
 ## Round Output Template
 
-Use this concise structure each round:
-
 ```markdown
 ## Round N Plan
+- Input design version: Dn
 - Focus dimensions:
-- Why these first:
+- Why now:
 - Human-adjustable changes:
 
 ## Findings
 ### RN-X [dimension][severity] title
 - Evidence:
-- Risk:
+- Impact:
 - Options:
 - Recommendation:
+- Duplication intent (if relevant):
+
+## Saved Report
+- Report ID: Rn
+- Issue status snapshot:
 
 ## Decision Log (Human)
 - RN-X: accept/reject/defer/partial (+ rationale)
+
+## Revision Actions
+- RN-X -> expected design change / explicit no-change reason
+
+## Revised Design Checkpoint
+- Revised design version: Dn+1 (or `not ready`)
+- Change log (Issue ID -> section delta):
 
 ## Next Round Draft
 - Carry-over risks:
 - Proposed focus:
 - Plan changes:
-```
 
----
+## Human Gate
+- 继续审查 / 有条件收口 / 结束审查
+```
 
 ## Closure Protocol (Human-Gated)
 
-At the end of each round, ask for explicit status:
-
-- `继续审查` (continue with updated plan)
-- `有条件收口` (close with accepted residual risks/TODOs)
-- `结束审查` (ready for implementation)
-
 Before closure, provide:
-- Open issue ledger by severity.
-- Explicit residual risk statement.
-- Implementation watchlist derived from deferred items.
+- Open issue ledger by severity
+- Residual risk statement
+- Implementation watchlist from deferred items
 
-Only close after human confirmation.
-
----
-
-## Practical Notes
-
-- Keep this workflow flexible: dimensions and order are defaults, not hard rules.
-- When review history exists, extract dimensions from that history first, then refine.
-- Prefer “small rounds + explicit decisions” over one giant review dump.
-- Preserve traceability: every accepted/deferred item should be linkable to a specific issue ID.
-- Prefer dual-track execution: primary focus dimensions + one sentinel dimension every round.
+Never close without explicit human confirmation.

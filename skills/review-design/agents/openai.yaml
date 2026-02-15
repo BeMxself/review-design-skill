@@ -1,4 +1,4 @@
 interface:
   display_name: Review Design
   short_description: Iterative human+AI workflow for multi-round design document review.
-  default_prompt: Run a Round 0 review plan first, extract review dimensions, score priorities dynamically, and guide human-gated closure.
+  default_prompt: Run iterative versioned review: start with Round 0 setup, execute one round per response, save report Rn, disposition issues with the human, require revised design Dn+1 before next round, and always end with human gate (继续审查/有条件收口/结束审查).
